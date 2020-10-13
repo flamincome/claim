@@ -95,6 +95,7 @@ contract FlamincomeClaim {
                  uint256 prevVotingPower,
                  bytes memory prevScript) = voting.getVote(_voteId - 1);
 
+                // the gap between current vote and previous vote
                 _voteGap = startDate - prevStartDate;
             }
 
@@ -105,7 +106,11 @@ contract FlamincomeClaim {
                     return;
                 }
 
+                // how many votes claimer staked for current vote
                 uint256 _stake = voting.token.balanceOfAt(_claimer, snapshotBlock);
+                //               _stake       _voteGap
+                // _rewards = ------------ * ---------- * totalSupply
+                //             yea + nay      oneYear
                 uint256 _rewards = (_stake.div(yea.add(nay))).mul(_voteGap.div(oneYear)).mul(totalSupply);
                 _totalRewards.add(rewards);
                 claimed[_voteId][_claimer] = true;
