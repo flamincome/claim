@@ -54,66 +54,76 @@ contract FlamincomeClaim {
     }
 
     function claimAt(uint256 _voteId) public {
-        address _claimer = msg.sender;
-
-        if (claimed[_voteId][claimer]) {
-            emit AlreadyClaimed(_voteId, claimer);
-            return;
-        }
-
-        (bool open,
-         bool executed,
-         uint64 startDate,
-         uint64 snapshotBlock,
-         uint64 supportRequired,
-         uint64 minAcceptQuorum,
-         uint256 yea,
-         uint256 nay,
-         uint256 votingPower,
-         bytes memory script) = voting.getVote(_voteId);
-
-        uint64 _voteGap = startDate - createDate;
-
-        if (_voteId > 0) {
-            (bool prevOpen,
-             bool prevExecuted,
-             uint64 prevStartDate,
-             uint64 prevSnapshotBlock,
-             uint64 prevSupportRequired,
-             uint64 prevMinAcceptQuorum,
-             uint256 prevYea,
-             uint256 prevNay,
-             uint256 prevVotingPower,
-             bytes memory prevScript) = voting.getVote(_voteId - 1);
-
-            _voteGap = startDate - prevStartDate;
-        }
-
-        if (!_isVoteOpen()) {
-            VoterState state = voting.getVoterState(_voteId, _claimer);
-            if (state == VoterState.Absent) {
-                emit VoterStateInvalid(_voteId, _claimer);
-                return;
-            }
-
-            uint256 _stake = voting.token.balanceOfAt(_claimer, snapshotBlock);
-            uint256 _rewards = (_stake.div(yea.add(nay))).mul(_voteGap.div(oneYear)).mul(totalSupply);
-            claimToken.safeTransfer(_claimer, _rewards);
-            claimed[_voteId][_claimer] = true;
-        } else {
-            emit VoteStillOpen(_voteId, _claimer);
-        }
+        uint256 _voteIds[] = [_voteId];
+        claimSome(_voteIds);
     }
 
     function claimSome(uint256[] _voteIds) public {
-        for (uint i; i < _voteIds.length; i++) {
-            claimAt(_voteIds[i]);
+        address _claimer = msg.sender;
+        uint256 _totalRewards = 0;
+
+        for (uint i = 0; i < _voteIds.length; i++) {
+            _voteId = _voteIds[i]
+
+            if (claimed[_voteId][_claimer]) {
+                emit AlreadyClaimed(_voteId, _claimer);
+                continue;
+            }
+
+            (bool open,
+             bool executed,
+             uint64 startDate,
+             uint64 snapshotBlock,
+             uint64 supportRequired,
+             uint64 minAcceptQuorum,
+             uint256 yea,
+             uint256 nay,
+             uint256 votingPower,
+             bytes memory script) = voting.getVote(_voteId);
+
+            uint64 _voteGap = startDate - createDate;
+
+            if (_voteId > 0) {
+                (bool prevOpen,
+                 bool prevExecuted,
+                 uint64 prevStartDate,
+                 uint64 prevSnapshotBlock,
+                 uint64 prevSupportRequired,
+                 uint64 prevMinAcceptQuorum,
+                 uint256 prevYea,
+                 uint256 prevNay,
+                 uint256 prevVotingPower,
+                 bytes memory prevScript) = voting.getVote(_voteId - 1);
+
+                _voteGap = startDate - prevStartDate;
+            }
+
+            if (!_isVoteOpen()) {
+                VoterState state = voting.getVoterState(_voteId, _claimer);
+                if (state == VoterState.Absent) {
+                    emit VoterStateInvalid(_voteId, _claimer);
+                    return;
+                }
+
+                uint256 _stake = voting.token.balanceOfAt(_claimer, snapshotBlock);
+                uint256 _rewards = (_stake.div(yea.add(nay))).mul(_voteGap.div(oneYear)).mul(totalSupply);
+                _totalRewards.add(rewards);
+                claimed[_voteId][_claimer] = true;
+            } else {
+                emit VoteStillOpen(_voteId, _claimer);
+            }
         }
+
+        claimToken.safeTransfer(_claimer, _totalRewards);
     }
 
     function claimAll() public {
-        for (uint i; i < voting.votesLength; i++) {
-            claimAt(i);
+        uint256 _voteIds[voting.votesLength];
+
+        for (uint i = 0; i < voting.votesLength; i++) {
+            _voteIds[i] = i;
         }
+
+        claimSome(_voteIds);
     }
 }
