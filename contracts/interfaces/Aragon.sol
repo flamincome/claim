@@ -1,7 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.2;
 
+// https://github.com/aragon/minime/blob/master/contracts/MiniMeToken.sol
+interface IMiniMeToken {
+    function balanceOfAt(address, uint) external view returns (uint);
+}
+
+// https://github.com/aragon/aragon-apps/blob/master/apps/voting/contracts/Voting.sol
 interface IVoting {
+    function token() external view returns (IMiniMeToken);
+    function voteTime() external view returns (uint64);
+    function votesLength() external view returns (uint256);
+
     enum VoterState { Absent, Yea, Nay }
 
     struct Vote {

@@ -1,0 +1,27 @@
+{
+  "name": "claim",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flamincome/claim.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/flamincome/claim/issues"
+  },
+  "homepage": "https://github.com/flamincome/claim#readme",
+  "dependencies": {
+    "@aragon/minime": "^1.0.0",
+    "@aragon/os": "^4.4.0",
+    "@openzeppelin/contracts": "^3.2.0"
+  }
+}
