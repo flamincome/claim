@@ -22,6 +22,11 @@
   "dependencies": {
     "@aragon/minime": "^1.0.0",
     "@aragon/os": "^4.4.0",
-    "@openzeppelin/contracts": "^3.2.0"
+    "@openzeppelin/contracts": "^3.2.0",
+    "truffle-hdwallet-provider": "^1.0.0-web3one.5"
+  },
+  "devDependencies": {
+    "truffle-plugin-verify": "^0.4.0",
+    "verify-on-etherscan": "^1.2.1"
   }
 }

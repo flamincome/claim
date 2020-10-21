@@ -41,11 +41,19 @@ contract FlamincomeClaim is TimeHelpers {
         uint256 nay;
     }
 
-    constructor(uint64 _createDate, address _tokenAddress, address _votingAddress) public {
-        createDate = _createDate;
-        claimToken = IERC20(_tokenAddress);
-        voting = IVoting(_votingAddress);
+    constructor() public {
+        governance = msg.sender;
         oneYear = 31536000; // 365 * 24 * 3600
+    }
+
+    function setGovernance(address _governance) public {
+        require(msg.sender == governance, "!governance");
+        governance = _governance;
+    }
+
+    function setCreateDate(uint64 _createDate) public {
+        require(msg.sender == governance, "!governance");
+        createDate = _createDate;
     }
 
     function setTokenAddress(address _tokenAddress) public {

@@ -54,3 +54,5 @@ allFiredEvents
 # Dev
 truffle-config.js
 .solcover.js
+start.sh
+.secrets.json
