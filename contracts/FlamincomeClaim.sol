@@ -66,6 +66,11 @@ contract FlamincomeClaim is TimeHelpers {
         voting = IVoting(_votingAddress);
     }
 
+    function setTotalSupply(uint256 _totalSupply) public {
+        require(msg.sender == governance, "!governance");
+        totalSupply = _totalSupply;
+    }
+
     function _isVoteOpen(uint64 startDate, bool executed) internal view returns (bool) {
         return getTimestamp64() < startDate.add(voting.voteTime()) && !executed;
     }
