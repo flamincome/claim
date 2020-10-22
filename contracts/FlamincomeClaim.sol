@@ -96,14 +96,71 @@ contract FlamincomeClaim is TimeHelpers {
         });
     }
 
-    function claimAt(uint256 _voteId) public {
+    function claimAt(uint256 _voteId, address _claimer) public {
         uint256[] memory _voteIds = new uint256[](1);
         _voteIds[0] = _voteId;
-        claimSome(_voteIds);
+        claimSome(_voteIds, _claimer);
     }
 
-    function claimSome(uint256[] memory _voteIds) public {
+    function claimAtSelf(uint256 _voteId) public {
         address _claimer = msg.sender;
+        claimAt(_voteId, _claimer);
+    }
+
+    // TODO: claimAvailableAt claimAvailableWith claimAvailableAll
+    function claimAvailable(uint256[] memory _voteIds, address _claimer) public view returns(uint256) {
+        uint256 _totalRewards = 0;
+
+        for (uint i = 0; i < _voteIds.length; i++) {
+            uint256 _voteId = _voteIds[i];
+
+            if (claimed[_voteId][_claimer]) {
+                // emit AlreadyClaimed(_voteId, _claimer);
+                continue;
+            }
+
+            SimpleVote memory _currentVote = _parseVote(_voteId);
+
+            uint256 _voteGap = _currentVote.startDate.sub(createDate);
+
+            if (_voteId > 0) {
+                uint256 _prevVoteId = _voteId.sub(1);
+
+                SimpleVote memory _prevVote = _parseVote(_prevVoteId);
+
+                // the gap between current vote and previous vote
+                _voteGap = _currentVote.startDate.sub(_prevVote.startDate);
+            }
+
+            if (!_isVoteOpen(_currentVote.startDate, _currentVote.executed)) {
+                IVoting.VoterState state = voting.getVoterState(_voteId, _claimer);
+                if (state == IVoting.VoterState.Absent) {
+                    // emit VoterStateInvalid(_voteId, _claimer);
+                    return _totalRewards;
+                }
+
+                // how many votes claimer staked for current vote
+                uint256 _stake = voting.token().balanceOfAt(_claimer, _currentVote.snapshotBlock);
+                //               _stake       _voteGap
+                // _rewards = ------------ * ---------- * totalSupply
+                //             yea + nay      oneYear
+                uint256 _rewards = (_stake.div(_currentVote.yea.add(_currentVote.nay))).mul(_voteGap.div(oneYear)).mul(totalSupply);
+                _totalRewards.add(_rewards);
+                // claimed[_voteId][_claimer] = true;
+            } else {
+                // emit VoteStillOpen(_voteId, _claimer);
+            }
+        }
+
+        return _totalRewards;
+    }
+
+    function claimAvailableSelf(uint256[] memory _voteIds) public view returns(uint256) {
+        address _claimer = msg.sender;
+        claimAvailable(_voteIds, _claimer);
+    }
+
+    function claimSome(uint256[] memory _voteIds, address _claimer) public {
         uint256 _totalRewards = 0;
 
         for (uint i = 0; i < _voteIds.length; i++) {
@@ -150,13 +207,23 @@ contract FlamincomeClaim is TimeHelpers {
         claimToken.safeTransfer(_claimer, _totalRewards);
     }
 
-    function claimAll() public {
+    function claimSomeSelf(uint256[] memory _voteIds) public {
+        address _claimer = msg.sender;
+        claimSome(_voteIds, _claimer);
+    }
+
+    function claimAll(address _claimer) public {
         uint256[] memory _voteIds = new uint256[](voting.votesLength());
 
         for (uint i = 0; i < voting.votesLength(); i++) {
             _voteIds[i] = i;
         }
 
-        claimSome(_voteIds);
+        claimSome(_voteIds, _claimer);
+    }
+
+    function claimAllSelf() public {
+        address _claimer = msg.sender;
+        claimAll(_claimer);
     }
 }

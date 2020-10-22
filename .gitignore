@@ -56,3 +56,4 @@ truffle-config.js
 .solcover.js
 start.sh
 .secrets.json
+config
