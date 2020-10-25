@@ -5,6 +5,29 @@ let claimer = '0x5AEdBAacDf054738327CAc23C47017903684CAdf';
 await (async function() { ctx.voting = await IVoting.at(voting) })()
 await (async function() { ctx.votesLength = parseInt((await ctx.voting.votesLength()).toString()) })()
 
+await (async function() { ctx.claim = await FlamincomeClaim.new() })()
+await (async function() { await ctx.claim.setTotalSupply(new web3.utils.BN('1000000000000000000000')) })()
+await (async function() { return (await ctx.claim.totalSupply()).toString() })()
+
+await (async function() { await ctx.claim.setVotingAddress(voting) })()
+await (async function() { return (await ctx.claim.voting()) })()
+await (async function() { await ctx.claim.setCreateDate(new web3.utils.BN(1602247965)) })()
+await (async function() { return (await ctx.claim.createDate()).toString() })()
+
+await (async function() { return (await ctx.claim.claimAtAvailable(new web3.utils.BN(19), claimer)).toString() })()
+
+await (async function() { return (await ctx.claim.claimAtAvailableMock(new web3.utils.BN(19))) })()
+
+await (async function() { return (await ctx.claim.claimSomeAvailableMock([new web3.utils.BN(19)], claimer)) })()
+
+await (async function() { return (await ctx.claim.getStakeMock(new web3.utils.BN(19), claimer)).toString() })()
+
+await (async function() { return (await ctx.claim.parseVoteMock(new web3.utils.BN(19))) })()
+
+await (async function() { return (await ctx.claim.isVoteOpenMOck(new web3.utils.BN(19))) })()
+
+await (async function() { return (await ctx.claim.claimed(new web3.utils.BN(19), claimer)) })()
+
 await (async function() { return (await ctx.voting.getVote(0))['2'].toString() })()
 
 // this will get enum VoterState { Absent, Yea, Nay }, 0 => Absent, 1 => Yea, 2 => Nay
@@ -44,7 +67,7 @@ await (async function() { return (await ctx.voting.getVoterState(5, claimer)).to
 await (async function() { return (await ctx.voting.getVoterState(6, claimer)).toString() })()
 await (async function() { return (await ctx.voting.getVoterState(7, claimer)).toString() })()
 await (async function() { return (await ctx.voting.getVoterState(8, claimer)).toString() })()
-await (async function() { return (await ctx.voting.getVoterState(9, claimer)).toString() })()
+await (async function() { return (await ctx.voting.getVoterState(new web.utils.BN(9), claimer)).toString() })()
 await (async function() { return (await ctx.voting.getVoterState(10, claimer)).toString() })()
 await (async function() { return (await ctx.voting.getVoterState(11, claimer)).toString() })()
 await (async function() { return (await ctx.voting.getVoterState(12, claimer)).toString() })()

@@ -107,8 +107,18 @@ contract FlamincomeClaim is TimeHelpers {
         claimAt(_voteId, _claimer);
     }
 
-    // TODO: claimAvailableAt claimAvailableWith claimAvailableAll
-    function claimAvailable(uint256[] memory _voteIds, address _claimer) public view returns(uint256) {
+    function claimAtAvailable(uint256 _voteId, address _claimer) public view returns(uint256) {
+        uint256[] memory _voteIds = new uint256[](1);
+        _voteIds[0] = _voteId;
+        return claimSomeAvailable(_voteIds, _claimer);
+    }
+
+    function claimAtAvailableSelf(uint256 _voteId) public view returns(uint256) {
+        address _claimer = msg.sender;
+        return claimAtAvailable(_voteId, _claimer);
+    }
+
+    function claimSomeAvailable(uint256[] memory _voteIds, address _claimer) public view returns(uint256) {
         uint256 _totalRewards = 0;
 
         for (uint i = 0; i < _voteIds.length; i++) {
@@ -136,7 +146,8 @@ contract FlamincomeClaim is TimeHelpers {
                 IVoting.VoterState state = voting.getVoterState(_voteId, _claimer);
                 if (state == IVoting.VoterState.Absent) {
                     // emit VoterStateInvalid(_voteId, _claimer);
-                    return _totalRewards;
+                    // return _totalRewards;
+                    continue;
                 }
 
                 // how many votes claimer staked for current vote
@@ -144,8 +155,8 @@ contract FlamincomeClaim is TimeHelpers {
                 //               _stake       _voteGap
                 // _rewards = ------------ * ---------- * totalSupply
                 //             yea + nay      oneYear
-                uint256 _rewards = (_stake.div(_currentVote.yea.add(_currentVote.nay))).mul(_voteGap.div(oneYear)).mul(totalSupply);
-                _totalRewards.add(_rewards);
+                uint256 _rewards = (_stake.div(_currentVote.yea.add(_currentVote.nay))).mul(_voteGap.mul(totalSupply).div(oneYear));
+                _totalRewards = _totalRewards.add(_rewards);
                 // claimed[_voteId][_claimer] = true;
             } else {
                 // emit VoteStillOpen(_voteId, _claimer);
@@ -155,9 +166,9 @@ contract FlamincomeClaim is TimeHelpers {
         return _totalRewards;
     }
 
-    function claimAvailableSelf(uint256[] memory _voteIds) public view returns(uint256) {
+    function claimSomeAvailableSelf(uint256[] memory _voteIds) public view returns(uint256) {
         address _claimer = msg.sender;
-        claimAvailable(_voteIds, _claimer);
+        claimSomeAvailable(_voteIds, _claimer);
     }
 
     function claimSome(uint256[] memory _voteIds, address _claimer) public {
@@ -188,7 +199,7 @@ contract FlamincomeClaim is TimeHelpers {
                 IVoting.VoterState state = voting.getVoterState(_voteId, _claimer);
                 if (state == IVoting.VoterState.Absent) {
                     emit VoterStateInvalid(_voteId, _claimer);
-                    return;
+                    continue;
                 }
 
                 // how many votes claimer staked for current vote
@@ -196,8 +207,8 @@ contract FlamincomeClaim is TimeHelpers {
                 //               _stake       _voteGap
                 // _rewards = ------------ * ---------- * totalSupply
                 //             yea + nay      oneYear
-                uint256 _rewards = (_stake.div(_currentVote.yea.add(_currentVote.nay))).mul(_voteGap.div(oneYear)).mul(totalSupply);
-                _totalRewards.add(_rewards);
+                uint256 _rewards = (_stake.div(_currentVote.yea.add(_currentVote.nay))).mul(_voteGap.mul(totalSupply).div(oneYear));
+                _totalRewards = _totalRewards.add(_rewards);
                 claimed[_voteId][_claimer] = true;
             } else {
                 emit VoteStillOpen(_voteId, _claimer);
@@ -225,5 +236,20 @@ contract FlamincomeClaim is TimeHelpers {
     function claimAllSelf() public {
         address _claimer = msg.sender;
         claimAll(_claimer);
+    }
+
+    function claimAllAvailable(address _claimer) public view returns(uint256) {
+        uint256[] memory _voteIds = new uint256[](voting.votesLength());
+
+        for (uint i = 0; i < voting.votesLength(); i++) {
+            _voteIds[i] = i;
+        }
+
+        return claimSomeAvailable(_voteIds, _claimer);
+    }
+
+    function claimAllAvailableSelf() public view returns(uint256) {
+        address _claimer = msg.sender;
+        return claimAllAvailable(_claimer);
     }
 }
