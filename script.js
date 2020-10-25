@@ -14,19 +14,13 @@ await (async function() { return (await ctx.claim.voting()) })()
 await (async function() { await ctx.claim.setCreateDate(new web3.utils.BN(1602247965)) })()
 await (async function() { return (await ctx.claim.createDate()).toString() })()
 
-await (async function() { return (await ctx.claim.claimAtAvailable(new web3.utils.BN(19), claimer)).toString() })()
+await (async function() { return (await ctx.claim.claimAtAvailable(new web3.utils.BN(19), claimer)) })()
 
-await (async function() { return (await ctx.claim.claimAtAvailableMock(new web3.utils.BN(19))) })()
-
-await (async function() { return (await ctx.claim.claimSomeAvailableMock([new web3.utils.BN(19)], claimer)) })()
-
-await (async function() { return (await ctx.claim.getStakeMock(new web3.utils.BN(19), claimer)).toString() })()
-
-await (async function() { return (await ctx.claim.parseVoteMock(new web3.utils.BN(19))) })()
-
-await (async function() { return (await ctx.claim.isVoteOpenMOck(new web3.utils.BN(19))) })()
+await (async function() { return (await ctx.claim.claimSomeAvailable([new web3.utils.BN(19)], claimer)) })()
 
 await (async function() { return (await ctx.claim.claimed(new web3.utils.BN(19), claimer)) })()
+
+await (async function() { return (await ctx.claim.claimAt(new web3.utils.BN(19), claimer)) })()
 
 await (async function() { return (await ctx.voting.getVote(0))['2'].toString() })()
 
