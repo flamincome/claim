@@ -57,3 +57,4 @@ truffle-config.js
 start.sh
 .secrets.json
 config
+flatten.sol
