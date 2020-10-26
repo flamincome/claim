@@ -1,6 +1,7 @@
 let ctx = {};
 let voting = '0x1b4f5dc02a0e60422c4736d96628c3da63e1ceb5';
 let claimer = '0x5AEdBAacDf054738327CAc23C47017903684CAdf';
+let BN = web3.utils.BN;
 
 await (async function() { ctx.voting = await IVoting.at(voting) })()
 await (async function() { ctx.votesLength = parseInt((await ctx.voting.votesLength()).toString()) })()
@@ -76,18 +77,28 @@ await (async function() { return (await ctx.claim.getStake(claimer, 7394415)).to
 await (async function() { return (await ctx.claim.getStake(claimer, 7407181)).toString() })() // 102999999999999999994
 
 await (async function() { return (await ctx.claim.claimAtAvailable(new web3.utils.BN(15), claimer)) })() // 4756468797564687
+(new BN('3000000000000000000')).mul(new BN(150)).mul(new BN('1000000000000000000000')).div((new BN('3000000000000000000')).mul(new BN('31536000'))).toString() // 4756468797564687
 await (async function() { return (await ctx.claim.claimAtAvailable(new web3.utils.BN(16), claimer)) })() // 4756468797564687
+(new BN('3000000000000000000')).mul(new BN(150)).mul(new BN('1000000000000000000000')).div((new BN('3000000000000000000')).mul(new BN('31536000'))).toString() // 4756468797564687
 await (async function() { return (await ctx.claim.claimAtAvailable(new web3.utils.BN(17), claimer)) })() // 6690766108574327
-await (async function() { return (await ctx.claim.claimAtAvailable(new web3.utils.BN(18), claimer)) })() // 0
+(new BN('3000000000000000000')).mul(new BN(211)).mul(new BN('1000000000000000000000')).div((new BN('3000000000000000000')).mul(new BN('31536000'))).toString() // 6690766108574327
+await (async function() { return (await ctx.claim.claimAtAvailable(new web3.utils.BN(18), claimer)) })() // 0 this vote is in absent state
 await (async function() { return (await ctx.claim.claimAtAvailable(new web3.utils.BN(19), claimer)) })() // 10020294266869609
+(new BN('3000000000000000000')).mul(new BN(316)).mul(new BN('1000000000000000000000')).div((new BN('3000000000000000000')).mul(new BN('31536000'))).toString() // 10020294266869609
 await (async function() { return (await ctx.claim.claimAtAvailable(new web3.utils.BN(20), claimer)) })() // 2853881278538812
+(new BN('3000000000000000000')).mul(new BN(90)).mul(new BN('1000000000000000000000')).div((new BN('3000000000000000000')).mul(new BN('31536000'))).toString() // 2853881278538812
 await (async function() { return (await ctx.claim.claimAtAvailable(new web3.utils.BN(31), claimer)) })() // 5095476219339717945
+(new BN('102999999999999999996')).mul(new BN(176292)).mul(new BN('1000000000000000000000')).div((new BN('113000000000000000001')).mul(new BN('31536000'))).toString() // 5095476219339717945
 await (async function() { return (await ctx.claim.claimAtAvailable(new web3.utils.BN(33), claimer)) })() // 7653126585489599187
+(new BN('102999999999999999996')).mul(new BN(241349)).mul(new BN('1000000000000000000000')).div((new BN('103000000000000000003')).mul(new BN('31536000'))).toString() // 7653126585489599187
 await (async function() { return (await ctx.claim.claimAtAvailable(new web3.utils.BN(37), claimer)) })() // 2967529173008625063
+(new BN('102999999999999999994')).mul(new BN(93584)).mul(new BN('1000000000000000000000')).div((new BN('103000000000000000005')).mul(new BN('31536000'))).toString() // 2967529173008625063
 
 let voteIds = [new web3.utils.BN(15), new web3.utils.BN(16), new web3.utils.BN(17), new web3.utils.BN(18), new web3.utils.BN(19), new web3.utils.BN(20), new web3.utils.BN(31), new web3.utils.BN(33), new web3.utils.BN(37)]
 
-await (async function() { return (await ctx.claim.claimSomeAvailable(voteIds, claimer)) })()
+await (async function() { return (await ctx.claim.claimSomeAvailable(voteIds, claimer)) })() // true,true,true,false,true,true,true,true,true | 15745209857087054317
+
+(new BN('4756468797564687')).add(new BN('4756468797564687')).add(new BN('6690766108574327')).add(new BN('10020294266869609')).add(new BN('2853881278538812')).add(new BN('5095476219339717945')).add(new BN('7653126585489599187')).add(new BN('2967529173008625063')).toString() // 15745209857087054317
 
 /***************************************************************************************************************/
 
