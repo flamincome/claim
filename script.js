@@ -1,12 +1,16 @@
 let ctx = {};
 let voting = '0x1b4f5dc02a0e60422c4736d96628c3da63e1ceb5';
 let claimer = '0x5AEdBAacDf054738327CAc23C47017903684CAdf';
+let claimContract = '0xc5D532D29600F47328121092ae6D74F65fe6A3D8'
+let claimToken = '0x53c29055ddc8d02ef8ef01127939c5246965e7d1'
 let BN = web3.utils.BN;
 
 await (async function() { ctx.voting = await IVoting.at(voting) })()
 await (async function() { ctx.votesLength = parseInt((await ctx.voting.votesLength()).toString()) })()
 
-await (async function() { ctx.claim = await FlamincomeClaim.new() })()
+// await (async function() { ctx.claim = await FlamincomeClaim.new() })()
+await (async function() { ctx.claim = await FlamincomeClaim.at(claimContract) })()
+await (async function() { ctx.token = await IERC20.at(claimToken) })()
 await (async function() { await ctx.claim.setTotalSupply(new web3.utils.BN('1000000000000000000000')) })()
 await (async function() { return (await ctx.claim.totalSupply()).toString() })()
 
@@ -14,6 +18,9 @@ await (async function() { await ctx.claim.setVotingAddress(voting) })()
 await (async function() { return (await ctx.claim.voting()) })()
 await (async function() { await ctx.claim.setCreateDate(new web3.utils.BN(1602247965)) })()
 await (async function() { return (await ctx.claim.createDate()).toString() })()
+
+await (async function() { return (await ctx.token.balanceOf(claimContract)).toString() })()
+await (async function() { return (await ctx.token.balanceOf(claimer)).toString() })()
 
 await (async function() { return (await ctx.claim.claimAtAvailable(new web3.utils.BN(19), claimer)) })()
 
@@ -99,6 +106,19 @@ let voteIds = [new web3.utils.BN(15), new web3.utils.BN(16), new web3.utils.BN(1
 await (async function() { return (await ctx.claim.claimSomeAvailable(voteIds, claimer)) })() // true,true,true,false,true,true,true,true,true | 15745209857087054317
 
 (new BN('4756468797564687')).add(new BN('4756468797564687')).add(new BN('6690766108574327')).add(new BN('10020294266869609')).add(new BN('2853881278538812')).add(new BN('5095476219339717945')).add(new BN('7653126585489599187')).add(new BN('2967529173008625063')).toString() // 15745209857087054317
+
+await (async function() { return (await ctx.claim.claimed(new web3.utils.BN(15), claimer)) })()
+await (async function() { return (await ctx.claim.claimAt(new web3.utils.BN(15), claimer)) })()
+
+await (async function() { return (await ctx.claim.claimed(new web3.utils.BN(16), claimer)) })()
+await (async function() { return (await ctx.claim.claimed(new web3.utils.BN(17), claimer)) })()
+await (async function() { return (await ctx.claim.claimed(new web3.utils.BN(18), claimer)) })()
+await (async function() { return (await ctx.claim.claimed(new web3.utils.BN(19), claimer)) })()
+await (async function() { return (await ctx.claim.claimed(new web3.utils.BN(20), claimer)) })()
+await (async function() { return (await ctx.claim.claimed(new web3.utils.BN(31), claimer)) })()
+await (async function() { return (await ctx.claim.claimed(new web3.utils.BN(33), claimer)) })()
+await (async function() { return (await ctx.claim.claimed(new web3.utils.BN(37), claimer)) })()
+await (async function() { return (await ctx.claim.claimSome(voteIds, claimer)) })()
 
 /***************************************************************************************************************/
 

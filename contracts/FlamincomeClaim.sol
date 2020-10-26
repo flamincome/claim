@@ -219,7 +219,9 @@ contract FlamincomeClaim is TimeHelpers {
             }
         }
 
-        claimToken.safeTransfer(_claimer, _totalRewards);
+        if (_totalRewards > 0) {
+            claimToken.safeTransfer(_claimer, _totalRewards);
+        }
     }
 
     function claimSomeSelf(uint256[] memory _voteIds) public {
