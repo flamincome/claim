@@ -26,6 +26,7 @@
     "truffle-hdwallet-provider": "^1.0.0-web3one.5"
   },
   "devDependencies": {
+    "eslint": "^7.12.0",
     "truffle-plugin-verify": "^0.4.0",
     "verify-on-etherscan": "^1.2.1"
   }
