@@ -1,5 +1,5 @@
 let ctx = {};
-let voting = '0x1b4f5dc02a0e60422c4736d96628c3da63e1ceb5';
+let voting = '0x24d840dbaa0c0c72589c8f8860063024d1c064db';
 let claimer = '0x5AEdBAacDf054738327CAc23C47017903684CAdf';
 let claimContract = '0xc5D532D29600F47328121092ae6D74F65fe6A3D8'
 let claimToken = '0x53c29055ddc8d02ef8ef01127939c5246965e7d1'
